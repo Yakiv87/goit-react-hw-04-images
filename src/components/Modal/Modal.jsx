@@ -1,41 +1,39 @@
-import { Component } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from 'prop-types';
 import { ModalWrapper } from "./ModalWrapper.styled";
 
 
 
-const modalRoot = document.querySelector('modal-root') || document.body;;
+const modalRoot = document.querySelector('#modal-root') || document.body;
 
-export class Modal extends Component {
+export const Modal = ({ largeImageURL, toggleModal }) => {
 
-    componentDidMount() {
-        document.addEventListener('keydown', this.closeModalByEsc)
-    }
+    useEffect(() => {
+        console.log('mounted');
+            
+        const closeModalByEsc = e => {
+            console.log(e.code);
+            if (e.code === 'Escape') {
+                toggleModal()
+            };
+        };
+        
 
-    componentWillUnmount() {
-        document.removeEventListener('keydown', this.closeModalByEsc)
-    }
+        document.addEventListener('keydown', closeModalByEsc)
 
-    closeModalByEsc = e => {
-        if (e.code === 'Escape') {
-                this.props.toggleModal()
-            }
-    }
+        return () => document.removeEventListener('keydown', closeModalByEsc)
 
+    }, [toggleModal])
 
-    render() {
-        const {largeImageURL} = this.props
-
-        return createPortal(
-            <ModalWrapper>
-                <div className="Modal">
-                    <img src={largeImageURL} width="100%" alt="" />
-                </div>
-            </ModalWrapper>,
-            modalRoot
-        );
-    };
+    return createPortal(
+        <ModalWrapper>
+            <div className="Modal">
+                <img src={largeImageURL} alt="" />
+            </div>
+        </ModalWrapper>,
+        modalRoot
+    );
 };
 
 
